@@ -3,3 +3,5 @@ __pycache__/
 data.backup.json
 .DS_Store
 Thumbs.db
+
+.vercel

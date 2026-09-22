@@ -59,9 +59,11 @@ textarea{min-height:80px;resize:vertical}
 <div class="login" id="login">
   <div class="box">
     <h2>Back-office · Design MH</h2>
+    <label>E-mail</label>
+    <input type="email" id="mail" placeholder="admin@designmh.cg" autocomplete="username">
     <label>Mot de passe</label>
-    <input type="password" id="mdp" placeholder="Mot de passe admin" autocomplete="current-password">
-    <button class="btn or" id="btn-login" style="width:100%">Entrer</button>
+    <input type="password" id="mdp" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="btn or" id="btn-login" style="width:100%">Se connecter</button>
     <p class="err" id="login-err"></p>
   </div>
 </div>
@@ -72,6 +74,7 @@ textarea{min-height:80px;resize:vertical}
     <div class="actions">
       <span class="statut" id="statut"></span>
       <a class="btn ghost mini" href="index.html" target="_blank">Voir le site</a>
+      <button class="btn ghost mini" id="btn-logout">Déconnexion</button>
       <button class="btn or" id="btn-save">Enregistrer</button>
     </div>
   </div>
@@ -81,6 +84,6 @@ textarea{min-height:80px;resize:vertical}
 
 <div class="toast" id="toast"></div>
 
-<script src="admin.js"></script>
+<script type="module" src="admin.js"></script>
 </body>
 </html>

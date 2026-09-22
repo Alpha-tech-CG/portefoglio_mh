@@ -1,39 +1,47 @@
-DESIGN MH — Site + Back-office
-==============================
+DESIGN MH — Site + Back-office (Firebase)
+=========================================
 
-CONTENU DU DOSSIER
-- index.html      : le site public (se remplit depuis data.json)
-- admin.html      : le back-office (pour tout modifier)
-- render.js       : moteur d'affichage du site
-- admin.js        : logique du back-office
-- styles.css      : styles du site
-- data.json       : TON CONTENU (textes, services, projets, avis...) — modifié par l'admin
-- data.backup.json: sauvegarde automatique avant chaque enregistrement
-- images/         : toutes les images (photo, réalisations, arrière-plans)
-- server.py       : mini-serveur local
+ARCHITECTURE
+- Site 100% statique (index.html + styles.css + render.js + images/)
+- Base de données : Firebase Firestore (projet "portfogliomh")
+- Authentification admin : Firebase Auth (email/mot de passe)
+- Les images sont servies depuis le dossier images/ ; les images ajoutées
+  via le back-office sont compressées et stockées directement dans Firestore.
 
-DÉMARRER (Windows)
-1. Ouvre un terminal dans ce dossier (clic droit > "Ouvrir dans le terminal")
-2. Tape :  python server.py
-3. Ouvre dans ton navigateur :
-   - Site   : http://localhost:8000
-   - Admin  : http://localhost:8000/admin.html
+FICHIERS
+- index.html / render.js : le site public (lit le contenu depuis Firestore)
+- admin.html / admin.js  : le back-office (Firebase Auth + Firestore)
+- styles.css             : styles du site
+- images/                : photo, réalisations, arrière-plans
+- data.json              : contenu initial (source du 1er import ; non utilisé en prod)
+- server.py              : ANCIEN serveur local (plus nécessaire avec Firebase)
 
 BACK-OFFICE
-- Mot de passe par défaut : designmh2026
-  (à changer dans server.py, ligne MOT_DE_PASSE)
-- Tu peux : modifier tous les textes, le téléphone/WhatsApp, les réseaux,
-  les services, les compétences, les chiffres, AJOUTER / RETIRER des images
-  de réalisations, changer la photo d'accueil, et gérer les AVIS.
-- Clique "Enregistrer" pour sauvegarder. Recharge le site pour voir le résultat.
+- Adresse : /admin.html
+- Compte par défaut : admin@designmh.cg  /  mot de passe : DesignMH2026!
+  (À CHANGER : Firebase Console > Authentication > Users, ou créer un nouvel utilisateur.)
+- Permet de tout modifier : textes, réseaux, contact, services, compétences,
+  chiffres, AJOUTER / RETIRER des réalisations (images), photo d'accueil, et AVIS.
+- Clique « Enregistrer » : les changements sont écrits dans Firestore et
+  apparaissent immédiatement sur le site (au rechargement).
 
-METTRE EN LIGNE PLUS TARD
-- Le site (index.html + styles.css + render.js + data.json + images/) est
-  100 % statique : il peut être hébergé gratuitement (Netlify, Vercel, GitHub Pages...).
-- Le back-office actuel fonctionne en LOCAL (avec server.py). Pour un back-office
-  en ligne accessible à distance, il faudra un hébergement avec backend + une
-  authentification renforcée (on pourra le faire ensuite).
+DÉVELOPPEMENT LOCAL
+- Sers le dossier en statique (les modules Firebase se chargent via https) :
+    python -m http.server 8090
+  puis ouvre http://localhost:8090
+  (Ne pas ouvrir index.html en file:// — les modules ES ne s'y chargent pas.)
 
-IMPORTANT
-- Ne supprime pas le dossier images/ ni data.json.
-- Change le mot de passe avant toute mise en ligne.
+DÉPLOIEMENT (Vercel)
+- Site déployé sur Vercel. Pour publier une mise à jour du CODE :
+    npx vercel --prod
+- Le CONTENU (textes, images, avis) se modifie via le back-office, sans redéploiement.
+
+FIREBASE — INFOS PROJET
+- Project ID : portfogliomh
+- Firestore : collections config/site, services, projets, avis
+- Règles : lecture publique, écriture réservée aux utilisateurs authentifiés (admin)
+
+SÉCURITÉ
+- La clé "apiKey" Firebase est publique (normal pour une app web) ; la sécurité
+  est assurée par les règles Firestore + l'authentification.
+- Change le mot de passe admin par défaut.

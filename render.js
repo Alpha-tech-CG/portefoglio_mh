@@ -1,10 +1,24 @@
-/* Design MH — rendu du site public depuis data.json */
+/* Design MH — site public alimenté par Firebase Firestore */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDCfIqpnhc-DdEzSZQ7Ms5MGNjRhV3Yemo",
+  authDomain: "portfogliomh.firebaseapp.com",
+  projectId: "portfogliomh",
+  storageBucket: "portfogliomh.firebasestorage.app",
+  messagingSenderId: "421872589384",
+  appId: "1:421872589384:web:cde874ff641c791caf567d"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 (async () => {
   const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = s => document.querySelector(s);
   const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  // Icônes réseaux
   const SOC = {
     facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l.5-4H13V7.5c0-1.1.3-1.9 1.9-1.9H17V2.1C16.6 2 15.5 2 14.3 2 11.7 2 10 3.6 10 6.5V10H7v4h3v8h3z"/></svg>',
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
@@ -20,24 +34,30 @@
   ];
   const GEN_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 7 7 .5-5.5 4.5L18 21l-6-4-6 4 1.5-7L2 9.5 9 9z"/></svg>';
   const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   let data;
   try {
-    data = await (await fetch('data.json?' + Date.now())).json();
+    const siteSnap = await getDoc(doc(db, 'config', 'site'));
+    if (!siteSnap.exists()) throw new Error('config/site manquant');
+    const site = siteSnap.data();
+    const services = (await getDocs(query(collection(db, 'services'), orderBy('ordre')))).docs.map(d => d.data());
+    const projets = (await getDocs(query(collection(db, 'projets'), orderBy('ordre')))).docs.map(d => d.data());
+    const avis = (await getDocs(query(collection(db, 'avis'), orderBy('ordre')))).docs.map(d => d.data());
+    data = Object.assign({}, site, { services, projets, avis });
   } catch (e) {
-    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:2rem;color:#fff">Impossible de charger data.json. Lancez le site via le serveur local (python server.py).</p>');
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:2rem;color:#fff">Impossible de charger les données. Réessayez plus tard.</p>');
     return;
   }
 
-  const wa = 'https://wa.me/' + (data.marque.whatsapp || '');
+  const wa = 'https://wa.me/' + ((data.marque && data.marque.whatsapp) || '');
 
-  // Réseaux
   function socials(container, mini) {
     container.innerHTML = '';
-    const nets = [['facebook', data.reseaux.facebook], ['instagram', data.reseaux.instagram], ['tiktok', data.reseaux.tiktok], ['whatsapp', wa]];
+    const r = data.reseaux || {};
+    const nets = [['facebook', r.facebook], ['instagram', r.instagram], ['tiktok', r.tiktok], ['whatsapp', wa]];
     nets.forEach(([n, href]) => {
-      if (!href) return;
+      if (!href || href === '#') return;
       const a = el('a'); a.href = href; a.setAttribute('aria-label', n);
       if (href.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; }
       a.innerHTML = SOC[n];
@@ -48,24 +68,20 @@
   socials($('#socials-haut'), false);
   socials($('#socials-foot'), true);
 
-  // Hero
-  $('#hero-salut-m').textContent = data.hero.salut;
-  $('#hero-salut-d').textContent = data.hero.salut;
-  $('#hero-titre').textContent = data.hero.titre;
-  $('#hero-intro').textContent = data.hero.intro;
-  $('#hero-photo').src = data.hero.photo;
+  const hero = data.hero || {};
+  $('#hero-salut-m').textContent = hero.salut || '';
+  $('#hero-salut-d').textContent = hero.salut || '';
+  $('#hero-titre').textContent = hero.titre || 'Je crée des';
+  $('#hero-intro').textContent = hero.intro || '';
+  if (hero.photo) $('#hero-photo').src = hero.photo;
   $('#hero-wa').href = wa;
 
-  // À propos
-  $('#apropos-titre').textContent = data.apropos.titre;
-  $('#apropos-texte').textContent = data.apropos.texte;
-  const stats = data.apropos.stats || [];
+  const ap = data.apropos || { stats: [] };
+  $('#apropos-titre').textContent = ap.titre || '';
+  $('#apropos-texte').textContent = ap.texte || '';
+  const stats = ap.stats || [];
   const big = stats.find(s => s.big) || stats[0];
-  if (big) {
-    $('#ap-grand-val').dataset.compteur = big.valeur;
-    $('#ap-grand-suf').textContent = big.suffixe || '';
-    $('#ap-grand-label').textContent = big.label;
-  }
+  if (big) { $('#ap-grand-val').dataset.compteur = big.valeur; $('#ap-grand-suf').textContent = big.suffixe || ''; $('#ap-grand-label').textContent = big.label; }
   const cg = $('#chiffres-grille'); cg.innerHTML = '';
   stats.filter(s => s !== big).forEach(s => {
     const d = el('div', 'chiffre revele');
@@ -73,18 +89,14 @@
     cg.appendChild(d);
   });
 
-  // Compétences
   const compG = $('#comp-grille'); compG.innerHTML = '';
   (data.competences || []).forEach(col => {
     const c = el('div', 'comp-col revele');
     let h = '<h3>' + esc(col.titre) + '</h3>';
-    (col.items || []).forEach(([nom, pct]) => {
-      h += '<div class="barre"><div class="barre-tete"><span>' + esc(nom) + '</span><span>' + pct + '%</span></div><div class="rail"><i data-niveau="' + pct + '"></i></div></div>';
-    });
+    (col.items || []).forEach(it => { const nom = it.nom, pct = it.pct; h += '<div class="barre"><div class="barre-tete"><span>' + esc(nom) + '</span><span>' + pct + '%</span></div><div class="rail"><i data-niveau="' + pct + '"></i></div></div>'; });
     c.innerHTML = h; compG.appendChild(c);
   });
 
-  // Services
   const sg = $('#serv-grille'); sg.innerHTML = '';
   (data.services || []).forEach((s, i) => {
     const a = el('article', 'serv revele');
@@ -99,7 +111,6 @@
   cta.innerHTML = '<h3>Un projet en tête ?</h3><p>Décrivez votre besoin, recevez une proposition adaptée rapidement.</p><a href="#contact" class="btn ghost" style="align-self:flex-start;border-color:#fff;color:#fff">Me contacter</a>';
   sg.appendChild(cta);
 
-  // Réalisations
   const mos = $('#mosaique'); mos.innerHTML = '';
   (data.projets || []).forEach(p => {
     const b = el('button', 'projet'); b.dataset.cat = p.cat || '';
@@ -109,7 +120,6 @@
     mos.appendChild(b);
   });
 
-  // Témoignages
   const piste = $('#piste'); piste.innerHTML = '';
   (data.avis || []).forEach(a => {
     const note = Math.max(0, Math.min(5, a.note || 5));
@@ -120,48 +130,44 @@
     piste.appendChild(d);
   });
 
-  // Contact + footer
-  const tel = data.marque.tel || '';
+  const tel = (data.marque && data.marque.tel) || '';
   $('#ct-tel').href = 'tel:' + tel.replace(/\s/g, '');
   $('#ct-tel-txt').textContent = tel;
   $('#ct-wa').href = wa;
-  $('#ct-loc').textContent = data.marque.localisation || '';
+  $('#ct-loc').textContent = (data.marque && data.marque.localisation) || '';
   $('#foot-tel').textContent = tel;
-  $('#foot-loc').textContent = data.marque.localisation || '';
+  $('#foot-loc').textContent = (data.marque && data.marque.localisation) || '';
   $('#wa-float').href = wa;
   $('#annee').textContent = new Date().getFullYear();
 
   /* ---------- Interactions ---------- */
-  // Machine à écrire
-  const mots = data.hero.mots && data.hero.mots.length ? data.hero.mots : ['logos'];
+  const mots = hero.mots && hero.mots.length ? hero.mots : ['logos'];
   const cible = $('#machine');
-  let i = 0, j = 0, efface = false;
+  let mi = 0, mj = 0, efface = false;
   (function taper() {
     if (reduit) { cible.textContent = mots[0]; return; }
-    const mot = mots[i];
-    cible.textContent = mot.slice(0, j);
-    if (!efface && j < mot.length) { j++; setTimeout(taper, 90); }
+    const mot = mots[mi];
+    cible.textContent = mot.slice(0, mj);
+    if (!efface && mj < mot.length) { mj++; setTimeout(taper, 90); }
     else if (!efface) { efface = true; setTimeout(taper, 1600); }
-    else if (j > 0) { j--; setTimeout(taper, 45); }
-    else { efface = false; i = (i + 1) % mots.length; setTimeout(taper, 300); }
+    else if (mj > 0) { mj--; setTimeout(taper, 45); }
+    else { efface = false; mi = (mi + 1) % mots.length; setTimeout(taper, 300); }
   })();
 
-  // Compteurs + révélation + barres
-  function compter(e) {
-    const fin = +e.dataset.compteur, deb = performance.now();
-    if (reduit) { e.textContent = fin; return; }
-    (function pas(t) { const p = Math.min((t - deb) / 1800, 1); e.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(pas); })(deb);
+  function compter(e2) {
+    const fin = +e2.dataset.compteur, deb = performance.now();
+    if (reduit) { e2.textContent = fin; return; }
+    (function pas(t) { const pr = Math.min((t - deb) / 1800, 1); e2.textContent = Math.round(fin * (1 - Math.pow(1 - pr, 3))); if (pr < 1) requestAnimationFrame(pas); })(deb);
   }
-  const obs = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    const t = e.target;
+  const obs = new IntersectionObserver(es => es.forEach(e2 => {
+    if (!e2.isIntersecting) return;
+    const t = e2.target;
     if (t.classList.contains('revele')) { t.classList.add('vu'); t.querySelectorAll('.rail i').forEach(b => b.style.width = b.dataset.niveau + '%'); }
     if (t.dataset.compteur) compter(t);
     obs.unobserve(t);
   }), { threshold: .15 });
-  document.querySelectorAll('.revele,[data-compteur]').forEach(e => obs.observe(e));
+  document.querySelectorAll('.revele,[data-compteur]').forEach(e2 => obs.observe(e2));
 
-  // Header + lien actif + haut
   const entete = $('#entete'), haut = $('#haut'), liens = document.querySelectorAll('.liens a');
   const secs = [...liens].map(a => document.querySelector(a.getAttribute('href')));
   addEventListener('scroll', () => {
@@ -173,13 +179,11 @@
   }, { passive: true });
   haut.onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Menu mobile
   const burger = $('#burger'), overlay = $('#overlay');
   const fermer = () => { overlay.classList.remove('ouvert'); burger.setAttribute('aria-expanded', false); document.body.style.overflow = ''; };
   burger.onclick = () => { const o = overlay.classList.toggle('ouvert'); burger.setAttribute('aria-expanded', o); document.body.style.overflow = o ? 'hidden' : ''; };
   overlay.querySelectorAll('a').forEach(a => a.onclick = fermer);
 
-  // Filtres
   const projets = [...document.querySelectorAll('.projet')];
   document.querySelectorAll('.filtres button').forEach(b => b.onclick = () => {
     document.querySelectorAll('.filtres button').forEach(x => x.classList.remove('actif'));
@@ -187,22 +191,20 @@
     projets.forEach(p => p.classList.toggle('cache', b.dataset.filtre !== 'tous' && p.dataset.cat !== b.dataset.filtre));
   });
 
-  // Visionneuse
   const vis = $('#visionneuse'), vImg = $('#v-img'), vTitre = $('#v-titre');
   let visibles = [], idx = 0;
   function montrer(k) { idx = (k + visibles.length) % visibles.length; const p = visibles[idx], im = p.querySelector('img'); vImg.src = im.src; vImg.alt = im.alt; vTitre.textContent = p.querySelector('strong').textContent + ' (' + (idx + 1) + '/' + visibles.length + ')'; }
   projets.forEach(p => p.onclick = () => { visibles = projets.filter(x => !x.classList.contains('cache')); montrer(visibles.indexOf(p)); vis.classList.add('ouverte'); document.body.style.overflow = 'hidden'; $('#v-fermer').focus(); });
   const fv = () => { vis.classList.remove('ouverte'); document.body.style.overflow = ''; };
   $('#v-fermer').onclick = fv;
-  $('#v-prec').onclick = e => { e.stopPropagation(); montrer(idx - 1); };
-  $('#v-suiv').onclick = e => { e.stopPropagation(); montrer(idx + 1); };
-  vis.onclick = e => { if (e.target === vis) fv(); };
-  addEventListener('keydown', e => { if (!vis.classList.contains('ouverte')) return; if (e.key === 'Escape') fv(); if (e.key === 'ArrowLeft') montrer(idx - 1); if (e.key === 'ArrowRight') montrer(idx + 1); });
+  $('#v-prec').onclick = e2 => { e2.stopPropagation(); montrer(idx - 1); };
+  $('#v-suiv').onclick = e2 => { e2.stopPropagation(); montrer(idx + 1); };
+  vis.onclick = e2 => { if (e2.target === vis) fv(); };
+  addEventListener('keydown', e2 => { if (!vis.classList.contains('ouverte')) return; if (e2.key === 'Escape') fv(); if (e2.key === 'ArrowLeft') montrer(idx - 1); if (e2.key === 'ArrowRight') montrer(idx + 1); });
   let x0 = null;
-  vis.addEventListener('touchstart', e => x0 = e.touches[0].clientX, { passive: true });
-  vis.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) montrer(idx + (dx < 0 ? 1 : -1)); x0 = null; });
+  vis.addEventListener('touchstart', e2 => x0 = e2.touches[0].clientX, { passive: true });
+  vis.addEventListener('touchend', e2 => { if (x0 === null) return; const dx = e2.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) montrer(idx + (dx < 0 ? 1 : -1)); x0 = null; });
 
-  // Carrousel témoignages
   const pisteC = $('#piste'), points = $('#points');
   const total = pisteC.children.length; let courant = 0, minuteur;
   points.innerHTML = '';
@@ -211,16 +213,14 @@
   function relancer() { clearInterval(minuteur); if (!reduit && total > 1) minuteur = setInterval(() => aller((courant + 1) % total), 5500); }
   if (total) { aller(0); relancer(); }
 
-  // Formulaire -> WhatsApp
   const form = $('#formulaire');
-  form.onsubmit = e => {
-    e.preventDefault();
+  form.onsubmit = e2 => {
+    e2.preventDefault();
     const d = new FormData(form);
     const txt = 'Bonjour Design MH,%0A%0ANom : ' + encodeURIComponent(d.get('nom') || '') + '%0ATéléphone : ' + encodeURIComponent(d.get('tel') || '') + '%0AE-mail : ' + encodeURIComponent(d.get('email') || '') + '%0AProjet : ' + encodeURIComponent(d.get('sujet') || '') + '%0A%0A' + encodeURIComponent(d.get('message') || '');
     window.open(wa + '?text=' + txt, '_blank');
   };
 
-  // Arrière-plan animé (outils + code)
   (function fond() {
     const fx = $('#fx'); if (!fx || reduit) return;
     const svgs = [
