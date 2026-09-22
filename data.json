@@ -1,0 +1,217 @@
+{
+  "marque": {
+    "nom": "Design MH",
+    "localisation": "Brazzaville, Congo",
+    "tel": "+242 066 469 382",
+    "whatsapp": "242066469382"
+  },
+  "reseaux": {
+    "facebook": "#",
+    "instagram": "#",
+    "tiktok": "#"
+  },
+  "hero": {
+    "salut": "Graphiste & web designer · Brazzaville",
+    "titre": "Je crée des",
+    "mots": [
+      "logos",
+      "affiches",
+      "flyers",
+      "packagings",
+      "invitations",
+      "identités visuelles",
+      "sites web"
+    ],
+    "intro": "Je conçois des identités visuelles, des supports de communication et des interfaces qui allient esthétique et stratégie, pour que votre marque soit vue et retenue.",
+    "photo": "images/mh-cutout.png"
+  },
+  "apropos": {
+    "titre": "Le design au service de votre message",
+    "texte": "Basé à Brazzaville, j'accompagne entreprises, commerces et particuliers dans la création de supports qui marquent. Mon approche : écouter, comprendre, créer juste.",
+    "stats": [
+      {
+        "valeur": 100,
+        "suffixe": "+",
+        "label": "Visuels réalisés",
+        "big": true
+      },
+      {
+        "valeur": 50,
+        "suffixe": "+",
+        "label": "Clients accompagnés"
+      },
+      {
+        "valeur": 15,
+        "suffixe": "",
+        "label": "Types de supports"
+      },
+      {
+        "valeur": 3,
+        "suffixe": "",
+        "label": "Logiciels Adobe maîtrisés"
+      },
+      {
+        "valeur": 5,
+        "suffixe": "",
+        "label": "Domaines d'expertise"
+      }
+    ]
+  },
+  "competences": [
+    {
+      "titre": "Design graphique",
+      "items": [
+        [
+          "Photoshop",
+          95
+        ],
+        [
+          "Illustrator",
+          90
+        ],
+        [
+          "InDesign",
+          80
+        ]
+      ]
+    },
+    {
+      "titre": "Web design",
+      "items": [
+        [
+          "Figma",
+          80
+        ],
+        [
+          "HTML / CSS",
+          70
+        ],
+        [
+          "WordPress",
+          65
+        ]
+      ]
+    }
+  ],
+  "services": [
+    {
+      "titre": "Identité visuelle",
+      "desc": "Logo, carte de visite et charte graphique pour une marque reconnaissable partout.",
+      "img": "images/bg-identite.jpg"
+    },
+    {
+      "titre": "Affiches & print",
+      "desc": "Affiches, flyers, brochures, catalogues, menus, bannières et roll-up prêts pour l'imprimeur.",
+      "img": "images/bg-affiches.jpg"
+    },
+    {
+      "titre": "Réseaux sociaux & invitations",
+      "desc": "Visuels de publication, lancements, cartes d'anniversaire et invitations d'événements.",
+      "img": "images/bg-reseaux.jpg"
+    },
+    {
+      "titre": "Packaging & textile",
+      "desc": "Emballages, étiquettes de produits et t-shirts personnalisés.",
+      "img": "images/bg-packaging.jpg"
+    },
+    {
+      "titre": "Web design",
+      "desc": "Maquettes de sites et d'interfaces claires, modernes et adaptées au mobile.",
+      "img": "images/bg-web.jpg"
+    }
+  ],
+  "projets": [
+    {
+      "img": "images/proj-01.jpg",
+      "cat": "pub",
+      "label": "Publicité",
+      "titre": "Lancement de l'application FlavorWay"
+    },
+    {
+      "img": "images/proj-02.jpg",
+      "cat": "evenement",
+      "label": "Affiche de concert",
+      "titre": "Concert au Palais des Congrès"
+    },
+    {
+      "img": "images/proj-03.jpg",
+      "cat": "pub",
+      "label": "Affiche",
+      "titre": "Alpha Tech, innover ici"
+    },
+    {
+      "img": "images/proj-04.jpg",
+      "cat": "pub",
+      "label": "Flyer",
+      "titre": "MH Shop, boutique"
+    },
+    {
+      "img": "images/proj-05.jpg",
+      "cat": "pub",
+      "label": "Publicité",
+      "titre": "Chrisna Beauty, coiffure à domicile"
+    },
+    {
+      "img": "images/proj-06.jpg",
+      "cat": "packaging",
+      "label": "Étiquette produit",
+      "titre": "Aurovia Yaourt au chocolat"
+    },
+    {
+      "img": "images/proj-07.jpg",
+      "cat": "pub",
+      "label": "Réseaux sociaux",
+      "titre": "Yabisso Concept"
+    },
+    {
+      "img": "images/proj-08.jpg",
+      "cat": "anniv",
+      "label": "Anniversaire",
+      "titre": "Association Tosangana"
+    },
+    {
+      "img": "images/proj-09.jpg",
+      "cat": "evenement",
+      "label": "Invitation",
+      "titre": "Invitation d'anniversaire"
+    },
+    {
+      "img": "images/proj-10.jpg",
+      "cat": "anniv",
+      "label": "Anniversaire",
+      "titre": "Carte d'anniversaire"
+    },
+    {
+      "img": "images/proj-11.jpg",
+      "cat": "anniv",
+      "label": "Anniversaire",
+      "titre": "Collage d'anniversaire"
+    },
+    {
+      "img": "images/proj-12.jpg",
+      "cat": "anniv",
+      "label": "Anniversaire",
+      "titre": "Carte « Merci d'exister »"
+    }
+  ],
+  "avis": [
+    {
+      "note": 5,
+      "texte": "Texte de l'avis du client à ajouter ici : ce qu'il a aimé dans le travail et le résultat obtenu.",
+      "nom": "Nom du client",
+      "role": "Entreprise, Brazzaville"
+    },
+    {
+      "note": 5,
+      "texte": "Deuxième avis client à ajouter ici, idéalement court et précis sur le résultat.",
+      "nom": "Nom du client",
+      "role": "Entreprise, Brazzaville"
+    },
+    {
+      "note": 5,
+      "texte": "Troisième avis client à ajouter ici.",
+      "nom": "Nom du client",
+      "role": "Entreprise, Brazzaville"
+    }
+  ]
+}

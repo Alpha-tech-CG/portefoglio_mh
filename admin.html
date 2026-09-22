@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Back-office — Design MH</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--noir:#0a1a33;--noir-2:#0e2141;--carte:#12274c;--carte-2:#193259;--ligne:rgba(255,255,255,.12);--texte:#f3f7ff;--doux:#a7b6d4;--bleu:#3b6fe0;--or:#f5b43c;--display:"Kanit",sans-serif;--corps:"Jost",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--noir);color:var(--texte);font:400 15px/1.6 var(--corps)}
+h1,h2,h3{font-family:var(--display)}
+a{color:var(--or)}
+.wrap{max-width:960px;margin:0 auto;padding:1.2rem}
+/* Barre du haut */
+.top{position:sticky;top:0;z-index:20;background:rgba(10,26,51,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--ligne)}
+.top .wrap{display:flex;align-items:center;gap:1rem;justify-content:space-between}
+.top h1{font-size:1.2rem;font-weight:800}.top h1 span{color:var(--or)}
+.top .actions{display:flex;gap:.6rem;align-items:center}
+.btn{font-family:var(--display);font-weight:600;border:0;border-radius:10px;padding:.6rem 1.1rem;cursor:pointer;background:var(--bleu);color:#fff;transition:.2s}
+.btn:hover{filter:brightness(1.1)}
+.btn.or{background:var(--or);color:var(--noir)}
+.btn.ghost{background:transparent;border:1px solid var(--ligne);color:var(--texte)}
+.btn.mini{padding:.35rem .7rem;font-size:.85rem}
+.btn.danger{background:#e0464b;color:#fff}
+.statut{font-size:.85rem;color:var(--doux)}
+/* Cartes */
+.bloc{background:var(--carte);border:1px solid var(--ligne);border-radius:16px;padding:1.4rem 1.5rem;margin:1.2rem 0}
+.bloc>h2{font-size:1.15rem;color:var(--or);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+label{display:block;font-size:.8rem;color:var(--doux);margin:.2rem 0 .3rem;font-weight:500}
+input,textarea,select{width:100%;background:var(--noir-2);border:1px solid var(--ligne);border-radius:9px;padding:.6rem .7rem;color:var(--texte);font:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--bleu)}
+textarea{min-height:80px;resize:vertical}
+.champ{margin-bottom:.6rem}
+.ligne-item{background:var(--noir-2);border:1px solid var(--ligne);border-radius:12px;padding:1rem;margin-bottom:.8rem;position:relative}
+.ligne-item .sup{position:absolute;top:.6rem;right:.6rem}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.9rem}
+.gal .item{background:var(--noir-2);border:1px solid var(--ligne);border-radius:12px;overflow:hidden}
+.gal .item img{width:100%;height:120px;object-fit:cover;display:block;background:#000}
+.gal .item .corps{padding:.6rem}
+.gal .item select,.gal .item input{font-size:.82rem;padding:.4rem .5rem;margin-bottom:.4rem}
+.apercu{width:100%;height:150px;object-fit:contain;background:var(--noir-2);border:1px solid var(--ligne);border-radius:10px;margin-bottom:.5rem}
+.aide{font-size:.8rem;color:var(--doux);margin-top:.3rem}
+.row-add{margin-top:.4rem}
+/* Login */
+.login{position:fixed;inset:0;background:var(--noir);display:grid;place-items:center;z-index:50}
+.login .box{background:var(--carte);border:1px solid var(--ligne);border-radius:16px;padding:2rem;width:min(360px,92vw);text-align:center}
+.login h2{color:var(--or);margin-bottom:1rem}
+.login input{margin:.6rem 0 1rem;text-align:center}
+.err{color:#ff8a8f;font-size:.85rem;min-height:1.1em}
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--or);color:var(--noir);font-family:var(--display);font-weight:600;padding:.7rem 1.4rem;border-radius:10px;opacity:0;pointer-events:none;transition:.3s;z-index:60}
+.toast.on{opacity:1}
+@media(max-width:640px){.grille{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <div class="box">
+    <h2>Back-office · Design MH</h2>
+    <label>Mot de passe</label>
+    <input type="password" id="mdp" placeholder="Mot de passe admin" autocomplete="current-password">
+    <button class="btn or" id="btn-login" style="width:100%">Entrer</button>
+    <p class="err" id="login-err"></p>
+  </div>
+</div>
+
+<div class="top">
+  <div class="wrap">
+    <h1>Design MH<span>.</span> — Admin</h1>
+    <div class="actions">
+      <span class="statut" id="statut"></span>
+      <a class="btn ghost mini" href="index.html" target="_blank">Voir le site</a>
+      <button class="btn or" id="btn-save">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none"></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
